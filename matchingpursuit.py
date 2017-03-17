@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import os
 import pickle
 
 def snr(signal, recon):
@@ -67,7 +66,7 @@ class MatchingPursuer:
                 filters= gammachirps        
             else:
                 filters = tf.random_normal([self.nunits, self.lfilter])
-            filters /= np.linalg.norm(filters,axis=1)[:,None]
+            filters /= np.sqrt(np.sum(filters**2,axis=1))[:,None]
             return filters.reshape(filters.shape+(1,))
         elif self.data_dim>2:
             normal = tf.random_normal([self.nunits, self.lfilter, self.nfreqs])
@@ -182,7 +181,7 @@ class MatchingPursuer:
                             d['x'] : signal.reshape([1,-1,self.data_dim,1])}
                 mse, _ = sess.run([d['mse'],d['learn_op']],
                                       feed_dict=feed_dict)
-                loss = mse*signal.shape[0]/np.linalg.norm(signal)**2
+                loss = mse*signal.shape[0]/np.sum(signal**2)
                 sess.run(d['normalize'])
                 self.phi = sess.run(d['phi'])
                 self.losshistory.append(loss)
