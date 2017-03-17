@@ -1,8 +1,6 @@
 import numpy as np
 import tensorflow as tf
 import os
-from scipy.io import wavfile
-from scipy import signal as scisig
 import pickle
 
 def snr(signal, recon):
