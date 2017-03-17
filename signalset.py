@@ -1,14 +1,13 @@
 import numpy as np
-import tensorflow as tf
 import os
-from scipy.io import wavfile
-from scipy import signal as scisig
 import pickle
 try:
+    from scipy.io import wavfile
+    from scipy import signal as scisig
     import matplotlib.pyplot as plt
 except:
     # workaround for cluster python with tf but no plt
-    print("Can't import matplotlib, plotting not available.")
+    print("Can't import matplotlib or scipy.")
 
 # adapted from scipy cookbook
 lowcut = 100
