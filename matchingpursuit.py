@@ -65,7 +65,7 @@ class MatchingPursuer:
                     gammachirps[ii] = dcGC(times, freqs[ii])
                 filters= gammachirps        
             else:
-                filters = tf.random_normal([self.nunits, self.lfilter])
+                filters = np.random.randn(self.nunits, self.lfilter)
             filters /= np.sqrt(np.sum(filters**2,axis=1))[:,None]
             return filters.reshape(filters.shape+(1,))
         elif self.data_dim>2:
