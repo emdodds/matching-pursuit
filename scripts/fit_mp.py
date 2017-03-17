@@ -20,6 +20,7 @@ data = args.data
 
 if isinstance(data, str):
     if data.endswith(".npz"):
+        data = np.load(data)
         data_list = []
         for key, val in data.items():
             data_list.append(val)
