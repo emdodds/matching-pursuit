@@ -15,5 +15,5 @@
 
 cd /global/home/users/edodds/matching-pursuit
 export MODULEPATH=/global/software/sl-6.x64_64/modfiles/apps:$MODULEPATH
-module load ml/tensorflow/0.11.0rc0
+module load ml/tensorflow/0.12.1
 python scripts/fit_mp.py
