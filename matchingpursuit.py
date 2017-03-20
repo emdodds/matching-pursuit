@@ -26,7 +26,7 @@ class MatchingPursuer:
                  data_dim=1,
                  nunits = 32,
                  filter_time = 0.05,
-                 learn_rate = 1.0,
+                 learn_rate = 0.1,
                  max_iter = 100,
                  min_spike = 0.1,
                  sample_rate = 16000,
@@ -186,6 +186,8 @@ class MatchingPursuer:
                 self.phi = sess.run(d['phi'])
                 self.losshistory.append(loss)
                 self.save()
+                if ii%50==0 and ii!=0:
+                    print(ii)
 
     def get_params(self):
         return {'max_iter' : self.max_iter,

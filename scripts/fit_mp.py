@@ -5,7 +5,7 @@ import matchingpursuit
 
 
 parser = argparse.ArgumentParser(description='Fit model')
-parser.add_argument('--n_dict', '-n', type=int, default=200)
+parser.add_argument('--n_dict', '-n', type=int, default=32)
 parser.add_argument('--min_spike', '-m', type=float, default=0.1)
 parser.add_argument('--max_iter', type=float, default=1000)
 parser.add_argument('--data', type=str, default="../audition/Data/TIMIT.npz")
