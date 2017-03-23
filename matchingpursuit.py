@@ -2,6 +2,9 @@ import numpy as np
 import tensorflow as tf
 import pickle
 
+gpu_options = gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5,
+                                            allow_growth=True)
+
 def snr(signal, recon):
     """Returns signal-noise ratio in dB."""
     ratio = np.var(signal)/np.var(signal-recon)
@@ -128,7 +131,6 @@ class MatchingPursuer:
             return d
         
     def infer(self, signal):
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
         config = tf.ConfigProto(gpu_options=gpu_options)
         with tf.Session(graph=self.graph_dict['g'],
                         config=config) as sess:
@@ -173,7 +175,6 @@ class MatchingPursuer:
         return coeffs, xhat, resid, np.array(errors)
     
     def train(self, ntrials=100):
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
         config = tf.ConfigProto(gpu_options=gpu_options)
         d = self.graph_dict
         with tf.Session(graph=d['g'],
