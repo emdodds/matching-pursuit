@@ -53,8 +53,9 @@ class MatchingPursuer:
 
         self.losshistory = []
         
-    def initial_filters(self, gammachirp=False):
-        """If 1D, Return either a set of gammachirp filters or random (normal) filters,
+    def initial_filters(self, gammachirp=False, seed_length=100):
+        """If 1D, Return either a set of gammachirp filters or random filters,
+        with seed_length iid normal samples in the middle surrounded by 0s,
         normalized. Otherwise return Gaussian noise, not normalized."""
         if self.data_dim==1:
             if gammachirp:
@@ -66,6 +67,10 @@ class MatchingPursuer:
                 filters= gammachirps        
             else:
                 filters = np.random.randn(self.nunits, self.lfilter)
+                start = int(self.lfilter/2 - seed_length/2)
+                end = start + seed_length
+                filters[:,:start] = 0
+                filters[:,end:] = 0
             filters /= np.sqrt(np.sum(filters**2,axis=1))[:,None]
             return filters.reshape(filters.shape+(1,))
         elif self.data_dim>2:
@@ -129,6 +134,7 @@ class MatchingPursuer:
                         config=config) as sess:
             # some stuff here to initialize graph
             sess.run(tf.global_variables_initializer())
+            sess.run(d['phi'].assign(self.phi))
             coeffs, xhat, resid, errors = self._infer(signal, sess)
         return coeffs, xhat, resid, errors
         
@@ -174,6 +180,7 @@ class MatchingPursuer:
                         config=config) as sess:
             # some stuff here to initialize graph
             sess.run(tf.global_variables_initializer())
+            sess.run(d['phi'].assign(self.phi))
             for ii in range(ntrials):
                 signal = self.stims.rand_stim()
                 coeffs, xhat, resid, errors = self._infer(signal, sess)
