@@ -113,7 +113,7 @@ class MatchingPursuer:
                 resid = x - tf.expand_dims(xhat,3)
                 mse = tf.reduce_mean(tf.square(resid))
                 loss = 0.5*mse
-                learner = tf.train.GradientDescentOptimizer(self.learn_rate)
+                learner = tf.train.AdadeltaOptimizer(self.learn_rate)
                 learn_op = learner.minimize(loss,
                                             var_list = [phi])
                 normalize = phi.assign(tf.nn.l2_normalize(phi, dim=1)) # TODO: generalize for 2D data
