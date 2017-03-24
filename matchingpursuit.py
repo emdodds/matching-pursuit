@@ -30,7 +30,7 @@ class MatchingPursuer:
                  nunits = 32,
                  filter_time = 0.05,
                  learn_rate = 0.1,
-                 max_iter = 100,
+                 max_iter = 1000,
                  min_spike = 0.1,
                  sample_rate = 16000,
                  use_gammachirps=True,
@@ -55,6 +55,7 @@ class MatchingPursuer:
         self.graph_dict = self.build_graph()
 
         self.losshistory = []
+        self.meanacts = np.zeros(self.nunits)
         
     def initial_filters(self, gammachirp=False, seed_length=100):
         """If 1D, Return either a set of gammachirp filters or random filters,
@@ -193,6 +194,7 @@ class MatchingPursuer:
                 sess.run(d['normalize'])
                 self.phi = sess.run(d['phi'])
                 self.losshistory.append(loss)
+                self.meanacts = 0.99*self.meanacts + 0.01*coeffs[0].mean(0)
                 self.save()
                 if ii%50==0 and ii!=0:
                     print(ii)
@@ -207,10 +209,12 @@ class MatchingPursuer:
             setattr(self, key, val)
 
     def get_histories(self):
-        return {'loss' : self.losshistory}
+        return {'loss' : self.losshistory,
+                'meanacts': self.meanacts}
 
     def set_histories(self, histories):
         self.losshistory = histories['loss']
+        self.meanacts = histories['meanacts']
 
     def save(self, paramfile=None):
         paramfile = paramfile or self.paramfile
