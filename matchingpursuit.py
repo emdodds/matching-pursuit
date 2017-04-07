@@ -103,7 +103,7 @@ class MatchingPursuer:
                                name='input_signal')
             phi = tf.Variable(self.phi, dtype=tf.float32)
 
-            phi_for_conv = tf.transpose(phi, [1, 2, ])
+            phi_for_conv = tf.transpose(phi, [1, 2, 0])
             phi_for_conv = tf.expand_dims(phi_for_conv, 2)
 
             try:
