@@ -69,6 +69,7 @@ class MatchingPursuer:
 
         self.losshistory = []
         self.meanacts = np.zeros(self.nunits)
+        self.L1acts = np.zeros(self.nunits)
 
     def initial_filters(self, gammachirp=False, seed_length=100):
         """If 1D, Return either a set of gammachirp filters or random filters,
@@ -162,7 +163,8 @@ class MatchingPursuer:
     def _infer(self, signal, sess):
         signal = signal.reshape([1, -1, self.data_dim, 1])
         resid = np.concatenate([signal,
-                                np.zeros([1, self.lfilter-1, self.data_dim, 1])],
+                                np.zeros([1, self.lfilter-1,
+                                          self.data_dim, 1])],
                                axis=1)
         d = self.graph_dict
         coeffs = np.zeros([1, signal.shape[1]+self.lfilter-1, self.nunits])
@@ -173,16 +175,19 @@ class MatchingPursuer:
         iter_count = 0
         while cond:
             convs = sess.run(d['convs'], feed_dict={d['x']: resid})
-            winner = np.unravel_index(convs.argmax(), convs.shape)
-            coeffswinner = [winner[0], winner[1], winner[3]]
-            coeffswinner[1] += self.lfilter - 1
-            coeffswinner = tuple(coeffswinner)
-            if coeffs[coeffswinner] != 0:
-                print('Tried to use a coefficient twice. Breaking.')
-                cond = False
+            convmags = np.abs(convs)
+            accept = False
+            while not accept:
+                winner = np.unravel_index(convmags.argmax(), convs.shape)
+                coeffswinner = [winner[0], winner[1], winner[3]]
+                coeffswinner[1] += self.lfilter - 1
+                coeffswinner = tuple(coeffswinner)
+                if coeffs[coeffswinner] != 0:
+                    convmags[winner] = 0
+
             spike = convs[winner]
             iter_count += 1
-            if spike < self.min_spike or iter_count > self.max_iter:
+            if np.abs(spike) < self.min_spike or iter_count > self.max_iter:
                 cond = False
             if cond:
                 coeffs[coeffswinner] = convs[winner]
@@ -213,9 +218,19 @@ class MatchingPursuer:
                 self.phi = sess.run(d['phi'])
                 self.losshistory.append(loss)
                 self.meanacts = 0.99*self.meanacts + 0.01*coeffs[0].mean(0)
+                self.L1acts = 0.99*self.L1acts + 0.01*np.abs(coeffs[0]).mean(0)
                 self.save()
                 if ii % 50 == 0 and ii != 0:
                     print(ii)
+                    self.add_noise_to_silent_units(sess, d)
+
+    def add_noise_to_silent_units(self, sess, d):
+        noise = self.initial_filters()
+        for ii in range(self.nunits):
+            if self.L1acts[ii] < 0.001:
+                self.phi[ii] = self.phi[ii] + noise[ii]
+        sess.run(d['normalize'])
+        self.phi = sess.run(d['phi'])
 
     def get_params(self):
         return {'max_iter': self.max_iter,
@@ -228,11 +243,13 @@ class MatchingPursuer:
 
     def get_histories(self):
         return {'loss': self.losshistory,
-                'meanacts': self.meanacts}
+                'meanacts': self.meanacts,
+                'L1acts': self.L1acts}
 
     def set_histories(self, histories):
         self.losshistory = histories['loss']
         self.meanacts = histories['meanacts']
+        self.L1acts = histories['L1acts']
 
     def save(self, paramfile=None):
         paramfile = paramfile or self.paramfile
