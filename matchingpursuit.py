@@ -229,6 +229,7 @@ class MatchingPursuer:
         for ii in range(self.nunits):
             if self.L1acts[ii] < 0.001:
                 self.phi[ii] = self.phi[ii] + noise[ii]
+        sess.run(d['phi'].assign(self.phi))
         sess.run(d['normalize'])
         self.phi = sess.run(d['phi'])
 
