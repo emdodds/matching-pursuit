@@ -220,8 +220,9 @@ class MatchingPursuer:
                 self.meanacts = 0.99*self.meanacts + 0.01*coeffs[0].mean(0)
                 self.L1acts = 0.99*self.L1acts + 0.01*np.abs(coeffs[0]).mean(0)
                 self.save()
-                if ii % 50 == 0 and ii != 0:
+                if ii % 0 == 10:
                     print(ii)
+                if ii % 50 == 0 and ii != 0:
                     self.add_noise_to_silent_units(sess, d)
 
     def add_noise_to_silent_units(self, sess, d):
