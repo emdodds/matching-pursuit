@@ -182,7 +182,9 @@ class MatchingPursuer:
                 coeffswinner = [winner[0], winner[1], winner[3]]
                 coeffswinner[1] += self.lfilter - 1
                 coeffswinner = tuple(coeffswinner)
-                if coeffs[coeffswinner] != 0:
+                if coeffs[coeffswinner] == 0 or convmags[winner] == 0:
+                    accept = True
+                else:
                     convmags[winner] = 0
 
             spike = convs[winner]
@@ -220,7 +222,7 @@ class MatchingPursuer:
                 self.meanacts = 0.99*self.meanacts + 0.01*coeffs[0].mean(0)
                 self.L1acts = 0.99*self.L1acts + 0.01*np.abs(coeffs[0]).mean(0)
                 self.save()
-                if ii % 0 == 10:
+                if ii % 10 == 0:
                     print(ii)
                 if ii % 50 == 0 and ii != 0:
                     self.add_noise_to_silent_units(sess, d)
