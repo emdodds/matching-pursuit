@@ -69,8 +69,12 @@ class SignalSet:
         """Get one random signal."""
         which = np.random.randint(low=0, high=self.ndata)
         signal = self.data[which]
-        where = np.random.randint(low=0, high=signal.shape[0]-self.seg_length)
-        segment = signal[where:where+self.seg_length]
+        excess = signal.shape[0] - self.seg_length
+        if excess < 0:
+            segment = signal
+        else:
+            where = np.random.randint(low=0, high=excess)
+            segment = signal[where:where+self.seg_length]
         segment /= np.max(segment)  # norm by max as in Smith & Lewicki
         return segment
 
