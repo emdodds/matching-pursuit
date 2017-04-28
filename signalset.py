@@ -33,7 +33,7 @@ class SignalSet:
                  sample_rate=16000,
                  data='../Data/speech_corpora/TIMIT/',
                  min_length=800,
-                 seg_length=8000):
+                 seg_length=80000):
         self.sample_rate = sample_rate
         self.min_length = min_length
         self.seg_length = seg_length
