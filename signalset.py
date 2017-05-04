@@ -75,7 +75,7 @@ class SignalSet:
         else:
             where = np.random.randint(low=0, high=excess)
             segment = signal[where:where+self.seg_length]
-        segment /= np.max(segment)  # norm by max as in Smith & Lewicki
+        segment /= np.max(np.abs(segment))  # norm by max as in Smith & Lewicki
         return segment
 
     def write_sound(self, filename, signal):
