@@ -229,8 +229,9 @@ class MatchingPursuer:
 
     def add_noise_to_silent_units(self, sess, d):
         noise = self.initial_filters()
+        medianact = np.median(self.L1acts)
         for ii in range(self.nunits):
-            if self.L1acts[ii] < 0.001:
+            if self.L1acts[ii] < 0.1*medianact:
                 self.phi[ii] = self.phi[ii] + noise[ii]
         sess.run(d['phi'].assign(self.phi))
         sess.run(d['normalize'])
