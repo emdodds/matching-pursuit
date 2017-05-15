@@ -37,6 +37,7 @@ class MatchingPursuer:
                  min_spike=0.1,
                  sample_rate=16000,
                  use_gammachirps=True,
+                 corrupt_silent=False,
                  paramfile='dummy'):
         """Parameters:
         data:       (SignalSet) object containing training data
@@ -59,6 +60,7 @@ class MatchingPursuer:
         self.max_iter = max_iter
         self.data_dim = data_dim
         self.learn_rate = learn_rate
+        self.corrupt_silent = corrupt_silent
 
         self.paramfile = paramfile
 
@@ -224,7 +226,7 @@ class MatchingPursuer:
                 self.save()
                 if ii % 10 == 0:
                     print(ii)
-                if ii % 50 == 0 and ii != 0:
+                if ii % 50 == 0 and ii != 0 and self.corrupt_silent:
                     self.add_noise_to_silent_units(sess, d)
 
     def add_noise_to_silent_units(self, sess, d):
