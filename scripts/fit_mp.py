@@ -44,6 +44,8 @@ mp = matchingpursuit.MatchingPursuer(data=sigset,
 if args.load:
     mp.load(args.savefile)
 mp.learn_rate = learn_rate
+mp.min_spike = min_spike
+mp.max_iter = max_iter
 mp.save()
 
 mp.train(ntrials=args.ntrials)
